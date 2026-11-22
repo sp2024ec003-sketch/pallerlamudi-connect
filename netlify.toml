@@ -1,2 +1,3 @@
+# Netlify project runtime is set to Next.js for automatic OpenNext support.
 [build]
   command = "npm run build"
