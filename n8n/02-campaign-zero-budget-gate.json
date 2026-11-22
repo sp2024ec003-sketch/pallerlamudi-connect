@@ -1,0 +1,78 @@
+{
+  "name": "Pallerlamudi - Campaign Zero Budget Gate",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pallerlamudi-campaign-gate",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "b1",
+      "name": "Campaign Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json.body ?? $input.first().json;\\nconst budget = 0;\\nconst apiEnabled = false;\\nconst requested = Number(data.estimatedCostInr ?? 0);\\nif (!data.campaignId) throw new Error('campaignId required');\\nif (!apiEnabled || budget <= 0 || requested > budget) { return [{json:{campaignId:data.campaignId, decision:'BLOCKED_ZERO_BUDGET', monthlyBudgetInr:0, apiSendEnabled:false, manualModeAvailable:true}}]; }\\nreturn [{json:{campaignId:data.campaignId, decision:'REQUIRES_ADMIN_REVIEW'}}];"
+      },
+      "id": "b2",
+      "name": "Hard Zero Budget Gate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "b3",
+      "name": "Return Decision",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Campaign Webhook": {
+      "main": [
+        [
+          {
+            "node": "Hard Zero Budget Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hard Zero Budget Gate": {
+      "main": [
+        [
+          {
+            "node": "Return Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1"
+}

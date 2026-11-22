@@ -1,0 +1,78 @@
+{
+  "name": "Pallerlamudi - Report Intake",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pallerlamudi-report-intake",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "a1",
+      "name": "Report Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body ?? $input.first().json;\\nif (!body.reportId || !body.wardId || !body.title) throw new Error('reportId, wardId and title are required');\\nreturn [{json:{eventType:'REPORT_SUBMITTED', reportId:body.reportId, wardId:body.wardId, title:body.title, receivedAt:new Date().toISOString()}}];"
+      },
+      "id": "a2",
+      "name": "Validate Report Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, accepted: true, event: $json } }}",
+        "options": {}
+      },
+      "id": "a3",
+      "name": "Acknowledge",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Report Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Report Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Report Payload": {
+      "main": [
+        [
+          {
+            "node": "Acknowledge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1"
+}
