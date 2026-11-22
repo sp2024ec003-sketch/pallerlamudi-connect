@@ -1,0 +1,73 @@
+{
+  "name": "Pallerlamudi - Weekly Summary Trigger",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                0
+              ],
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "c1",
+      "name": "Every Sunday 9 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "task",
+              "value": "Prepare the week's Pallerlamudi Panchayat public update for manual review and publishing. Do not send messages to contacts.",
+              "type": "string"
+            },
+            {
+              "name": "generatedAt",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c2",
+      "name": "Prepare Reminder Payload",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        500,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Every Sunday 9 AM": {
+      "main": [
+        [
+          {
+            "node": "Prepare Reminder Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1"
+}
